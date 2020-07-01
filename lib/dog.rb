@@ -14,18 +14,64 @@ class Dog
              name TEXT,
              breed TEXT
            );
-        SQL 
+        SQL
     DB[:conn].execute(sql)
   end 
   
   def self.drop_table
     sql = <<-SQL
       DROP TABLE IF EXISTS dogs
-    SQL 
+    SQL
     DB[:conn].execute(sql)
   end 
   
   def save
-    
+    if self.id
+       self.update
+    else
+      sql = <<-SQL
+        INSERT INTO dogs (name, breed) 
+        VALUES (?, ?)
+      SQL
+      DB[:conn].execute(sql, self.name, self.breed)
+      @id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs")[0][0]
+      self
+    end
+  end
   
+  def self.create(name:, breed:)
+    dog = self.new(name: name, breed: breed)
+    dog.save
+    dog
+  end
+  
+  def self.new_from_db(row)
+    self.new(id: row[0], name: row[1], breed: [2])
+  end 
+  
+  def self.find_by_id(id)
+    sql = "SELECT * FROM  dogs WHERE id= ?"
+    result = DB[:conn].execute(sql, id).map {|row| self.new_from_db(row)}.first
+  end 
+  
+  def self.find_or_create_by(name:, breed:)
+    dogs = DB[:conn].execute("SELECT * FROM dogs WHERE name = ? AND breed = ?", name, breed)
+    if !dog.empty?
+       id = dog[0][0]
+        Dog.find_by_id(id)
+    else
+        dog = self.create(name: name, breed: breed)
+    end
+  end
 end 
+
+
+
+
+
+
+
+
+
+
+
