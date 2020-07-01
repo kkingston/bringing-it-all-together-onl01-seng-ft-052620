@@ -68,6 +68,13 @@ class Dog
     sql = "SELECT * FROM dogs WHERE name = ?"
     result = DB[:conn].execute(sql, name).map {|row| self.new_from_db(row)}.first
   end 
+  
+  def update
+    sql = <<-SQL
+      UPDATE dogs SET name = ?, breed = ? WHERE id= ?
+    SQL
+    DB[:conn].execute(sql, self.name, self.breed, self.id)
+  end 
 end 
 
 
