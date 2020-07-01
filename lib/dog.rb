@@ -45,9 +45,9 @@ class Dog
     dog
   end
   
-  # def self.new_from_db(row)
-  #   self.new(id: row[0], name: row[1], breed: [2])
-  # end 
+  def self.new_from_db(row)
+    self.new(id: row[0], name: row[1], breed: [2])
+  end 
   
   def self.new_from_db(row)
     self.new(name: row[1], breed: row[2], id: row[0])
